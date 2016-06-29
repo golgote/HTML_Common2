@@ -21,10 +21,10 @@
         "./"
     ],
     "license": "BSD License",
-    "name": "pear/html_common2",
+    "name": "golgote/html_common2",
     "support": {
         "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=HTML_Common2",
-        "source": "https://github.com/pear/HTML_Common2"
+        "source": "https://github.com/golgote/HTML_Common2"
     },
     "type": "library",
     "require": {
