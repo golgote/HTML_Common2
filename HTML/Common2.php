@@ -91,13 +91,15 @@ abstract class HTML_Common2 implements ArrayAccess
      *   defaults to 'ISO-8859-1'
      * - 'indent': string used to indent HTML elements, defaults to "\11"
      * - 'linebreak': string used to indicate linebreak, defaults to "\12"
+     * - 'lowercase': convert attributes to lowercase (default)
      *
      * @var array
      */
     private static $_options = array(
         'charset'   => 'ISO-8859-1',
         'indent'    => "\11",
-        'linebreak' => "\12"
+        'linebreak' => "\12",
+        'lowercase' => true
     );
 
     /**
@@ -159,12 +161,14 @@ abstract class HTML_Common2 implements ArrayAccess
                 $check = trim($regs[0][$i]);
                 $value = trim($regs[7][$i]);
                 if ($name == $check) {
-                    $attributes[strtolower($name)] = strtolower($name);
+                	$name = self::getOption('lowercase') ? strtolower($name) : $name;
+                    $attributes[$name] = $name;
                 } else {
                     if (!empty($value) && ($value[0] == '\'' || $value[0] == '"')) {
                         $value = substr($value, 1, -1);
                     }
-                    $attributes[strtolower($name)] = $value;
+                    $name = self::getOption('lowercase') ? strtolower($name) : $name;
+                    $attributes[$name] = $value;
                 }
             }
         }
@@ -187,10 +191,11 @@ abstract class HTML_Common2 implements ArrayAccess
         } elseif (is_array($attributes)) {
             foreach ($attributes as $key => $value) {
                 if (is_int($key)) {
-                    $key = strtolower($value);
+                	$key = self::getOption('lowercase') ? strtolower($value) : $value;
                     $prepared[$key] = $key;
                 } else {
-                    $prepared[strtolower($key)] = (string)$value;
+                	$key = self::getOption('lowercase') ? strtolower($key) : $key;
+                    $prepared[$key] = (string)$value;
                 }
             }
         }
@@ -205,7 +210,8 @@ abstract class HTML_Common2 implements ArrayAccess
      */
     protected static function removeAttributeArray(array &$attributes, $name)
     {
-        unset($attributes[strtolower($name)]);
+    	$name = self::getOption('lowercase') ? strtolower($name) : $name;
+        unset($attributes[$name]);
     }
 
     /**
@@ -246,7 +252,7 @@ abstract class HTML_Common2 implements ArrayAccess
      */
     public function setAttribute($name, $value = null)
     {
-        $name = strtolower($name);
+    	$name = self::getOption('lowercase') ? strtolower($name) : $name;
         if (is_null($value)) {
             $value = $name;
         }
@@ -267,7 +273,7 @@ abstract class HTML_Common2 implements ArrayAccess
      */
     public function getAttribute($name)
     {
-        $name = strtolower($name);
+        $name = self::getOption('lowercase') ? strtolower($name) : $name;
         return isset($this->attributes[$name])? $this->attributes[$name]: null;
     }
 
@@ -344,8 +350,9 @@ abstract class HTML_Common2 implements ArrayAccess
      */
     public function removeAttribute($attribute)
     {
-        if (in_array(strtolower($attribute), $this->watchedAttributes)) {
-            $this->onAttributeChange(strtolower($attribute), null);
+    	$attribute = self::getOption('lowercase') ? strtolower($attribute) : $attribute;
+        if (in_array($attribute, $this->watchedAttributes)) {
+            $this->onAttributeChange($attribute, null);
         } else {
             self::removeAttributeArray($this->attributes, $attribute);
         }
@@ -514,7 +521,8 @@ abstract class HTML_Common2 implements ArrayAccess
      */
     public function offsetExists($offset)
     {
-        return isset($this->attributes[strtolower($offset)]);
+    	$offset = self::getOption('lowercase') ? strtolower($offset) : $offset;
+        return isset($this->attributes[$offset]);
     }
 
     /**
